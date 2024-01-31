@@ -398,7 +398,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $firstDayOfMonth = new self();
         $firstDayOfMonth->setYear($this->year);
         $firstDayOfMonth->setMonth($this->month);
-        $firstDayOfMonth->setMonth(1);
+        $firstDayOfMonth->setDay(1);
         return $firstDayOfMonth;
     }
 
@@ -407,7 +407,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $lastDayOfMonth = new self();
         $lastDayOfMonth->setYear($this->year);
         $lastDayOfMonth->setMonth($this->month);
-        $lastDayOfMonth->setMonth(self::daysInMonth($this->year, $this->month));
+        $lastDayOfMonth->setDay(self::daysInMonth($this->year, $this->month));
         return $lastDayOfMonth;
     }
 }
