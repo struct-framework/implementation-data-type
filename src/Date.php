@@ -281,7 +281,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         }
         $month--;
         $daysInMonth = self::$daysPerMonth[$month];
-        if($month === 1 && self::isLeapYear($year)) {
+        if ($month === 1 && self::isLeapYear($year)) {
             $daysInMonth++;
         }
         return $daysInMonth;
