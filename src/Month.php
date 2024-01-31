@@ -50,6 +50,21 @@ final class Month extends AbstractDataType implements SerializableToInt, Compara
         return $this->month;
     }
 
+    public function firstDayOfMonth(): Date
+    {
+        $date = new Date();
+        $date->setYear($this->year);
+        $date->setMonth($this->month);
+        $date->setDay(1);
+        return $date;
+    }
+
+    public function lastDayOfMonth(): Date
+    {
+        $firstDayOfMonth = $this->firstDayOfMonth();
+        return $firstDayOfMonth->lastDayOfMonth();
+    }
+
     protected function _serializeToString(): string
     {
         $monthString = (string) $this->month;

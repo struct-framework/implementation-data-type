@@ -161,7 +161,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
     /**
      * @var array<int>
      */
-    protected array $daysPerMonth = [31, 28, 31 , 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    protected static array $daysPerMonth = [31, 28, 31 , 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
     public function serializeToInt(): int
     {
@@ -172,7 +172,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $days = self::calculateDaysByYear($this->year);
 
         for ($index = 0; $index < $month; $index++) {
-            $days += $this->daysPerMonth[$index];
+            $days += self::$daysPerMonth[$index];
             if ($index === 1 && $isLeapYear === true) {
                 $days++;
             }
@@ -191,7 +191,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $this->year = self::calculateYearByDays($days, $remainingDays);
         $isLeapYear = self::isLeapYear($this->year);
         $moth = 0;
-        foreach ($this->daysPerMonth as $daysPerMonth) {
+        foreach (self::$daysPerMonth as $daysPerMonth) {
             if ($moth === 1 && $isLeapYear === true) {
                 $daysPerMonth++;
             }
@@ -259,6 +259,9 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
 
     public static function isLeapYear(int $year): bool
     {
+        if ($year < 1000 || $year > 9999) {
+            throw new InvalidArgumentException('The year must be between 1000 and 9999', 1706731139);
+        }
         if ($year % 400 === 0) {
             return true;
         }
@@ -269,6 +272,19 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
             return true;
         }
         return false;
+    }
+
+    public static function daysInMonth(int $year, int $month): int
+    {
+        if ($month < 1 || $month > 12) {
+            throw new InvalidArgumentException('The month must be between 1 and 12', 1706731136);
+        }
+        $month--;
+        $daysInMonth = self::$daysPerMonth[$month];
+        if($month === 1 && self::isLeapYear($year)) {
+            $daysInMonth++;
+        }
+        return $daysInMonth;
     }
 
     public function compare(ComparableInterface $compareWith): Comparison
@@ -375,5 +391,23 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $lastDayInPreviousYear = $this->lastDayOfTheYear();
         $lastDayInPreviousYear->year--;
         return $lastDayInPreviousYear;
+    }
+
+    public function firstDayOfMonth(): self
+    {
+        $firstDayOfMonth = new self();
+        $firstDayOfMonth->setYear($this->year);
+        $firstDayOfMonth->setMonth($this->month);
+        $firstDayOfMonth->setMonth(1);
+        return $firstDayOfMonth;
+    }
+
+    public function lastDayOfMonth(): self
+    {
+        $lastDayOfMonth = new self();
+        $lastDayOfMonth->setYear($this->year);
+        $lastDayOfMonth->setMonth($this->month);
+        $lastDayOfMonth->setMonth(self::daysInMonth($this->year, $this->month));
+        return $lastDayOfMonth;
     }
 }
