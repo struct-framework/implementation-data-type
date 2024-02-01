@@ -116,6 +116,13 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         return $serializedData;
     }
 
+    public function reset(): void
+    {
+        $this->year = 1000;
+        $this->month = 1;
+        $this->day = 1;
+    }
+
     protected function _deserializeFromString(string $serializedData): void
     {
         if (\strlen($serializedData) !== 10) {
@@ -128,6 +135,8 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $year = (int) $parts[0];
         $month = (int) $parts[1];
         $day = (int) $parts[2];
+
+        $this->reset();
 
         try {
             $this->setYear($year);
