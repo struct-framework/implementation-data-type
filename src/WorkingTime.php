@@ -14,6 +14,15 @@ final class WorkingTime extends AbstractDataType implements SerializableToInt, S
 {
     public int $minutes = 0;
 
+    public function __construct(string|int|null $serializedData = null)
+    {
+        if (is_int($serializedData) === true) {
+            $this->minutes = $serializedData;
+            return;
+        }
+        parent::__construct($serializedData);
+    }
+
     public static function sub(SubInterface $minuend, SubInterface $subtrahend): self
     {
         if (
