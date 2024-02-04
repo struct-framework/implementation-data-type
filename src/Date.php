@@ -9,11 +9,11 @@ use Exception\Unexpected\UnexpectedException;
 use InvalidArgumentException;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Contracts\Operator\IncrementableInterface;
-use Struct\Contracts\Serialize\SerializableToInt;
+use Struct\Contracts\SerializableToInt;
 use Struct\DataType\Enum\Weekday;
 use Struct\Enum\Operator\Comparison;
+use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\CompareException;
-use Struct\Exception\Serialize\DeserializeException;
 
 final class Date extends AbstractDataType implements SerializableToInt, ComparableInterface, IncrementableInterface
 {

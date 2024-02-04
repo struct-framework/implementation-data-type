@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-use Struct\Contracts\DataType\DataTypeInterface;
+use Struct\Contracts\DataTypeInterface;
 
 abstract class AbstractDataType implements DataTypeInterface
 {

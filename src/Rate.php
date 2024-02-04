@@ -6,7 +6,7 @@ namespace Struct\DataType;
 
 use Struct\DataType\Enum\RateType;
 use Struct\DataType\Private\Helper\NumberStringToNumberInt;
-use Struct\Exception\Serialize\DeserializeException;
+use Struct\Exception\DeserializeException;
 
 final class Rate extends AbstractDataType
 {

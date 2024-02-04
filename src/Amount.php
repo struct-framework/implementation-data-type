@@ -9,8 +9,8 @@ use Struct\Contracts\Operator\SumInterface;
 use Struct\DataType\Enum\AmountVolume;
 use Struct\DataType\Enum\Currency;
 use Struct\DataType\Private\Helper\NumberStringToNumberInt;
+use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\DataTypeException;
-use Struct\Exception\Serialize\DeserializeException;
 
 final class Amount extends AbstractDataType implements SumInterface, SubInterface
 {

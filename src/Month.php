@@ -7,10 +7,10 @@ namespace Struct\DataType;
 use InvalidArgumentException;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Contracts\Operator\IncrementableInterface;
-use Struct\Contracts\Serialize\SerializableToInt;
+use Struct\Contracts\SerializableToInt;
 use Struct\Enum\Operator\Comparison;
+use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\CompareException;
-use Struct\Exception\Serialize\DeserializeException;
 
 final class Month extends AbstractDataType implements SerializableToInt, ComparableInterface, IncrementableInterface
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Struct\DataType\Private\Helper;
 
-use Struct\Exception\Serialize\DeserializeException;
+use Struct\Exception\DeserializeException;
 
 final class NumberStringToNumberInt
 {
