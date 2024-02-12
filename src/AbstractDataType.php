@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use RuntimeException;
 use Struct\Contracts\DataTypeInterface;
 
 abstract class AbstractDataType implements DataTypeInterface
@@ -18,12 +19,12 @@ abstract class AbstractDataType implements DataTypeInterface
 
     protected function _deserializeFromString(string $serializedData): void
     {
-        throw new \RuntimeException('Must be implemented', 1696233161);
+        throw new RuntimeException('Must be implemented', 1696233161);
     }
 
     protected function _serializeToString(): string
     {
-        throw new \RuntimeException('Must be implemented', 1696233161);
+        throw new RuntimeException('Must be implemented', 1696233161);
     }
 
     public function serializeToString(): string

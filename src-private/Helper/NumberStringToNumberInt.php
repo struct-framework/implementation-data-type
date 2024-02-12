@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Struct\DataType\Private\Helper;
 
+use function count;
+use function explode;
+use function str_starts_with;
+use function strlen;
 use Struct\Exception\DeserializeException;
 
 final class NumberStringToNumberInt
@@ -14,21 +18,21 @@ final class NumberStringToNumberInt
      */
     public static function numberStringToNumberInt(string $number): array
     {
-        $numberParts = \explode('.', $number);
-        if (\count($numberParts) > 2) {
+        $numberParts = explode('.', $number);
+        if (count($numberParts) > 2) {
             throw new DeserializeException('The amount must not have more than one decimal: ' . $number, 1696315411);
         }
         $numberFull = $numberParts[0];
         $numberFraction = '';
-        if (\count($numberParts) === 2) {
+        if (count($numberParts) === 2) {
             $numberFraction = $numberParts[1];
         }
 
-        $decimals = \strlen($numberFraction);
+        $decimals = strlen($numberFraction);
         $numberString = $numberFull . $numberFraction;
         $numberInt = (int) $numberString;
 
-        while (\str_starts_with($numberString, '0')) {
+        while (str_starts_with($numberString, '0')) {
             $numberString = substr($numberString, 1);
         }
 

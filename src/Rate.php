@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use function strlen;
 use Struct\DataType\Enum\RateType;
 use Struct\DataType\Private\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
+use function substr;
 
 final class Rate extends AbstractDataType
 {
@@ -84,12 +86,12 @@ final class Rate extends AbstractDataType
         $rate = '';
         $valueString = (string) $value;
         if ($decimals > 0) {
-            while (\strlen($valueString) <= $decimals) {
+            while (strlen($valueString) <= $decimals) {
                 $valueString = '0' . $valueString;
             }
-            $rate .= \substr($valueString, 0, $decimals * -1);
+            $rate .= substr($valueString, 0, $decimals * -1);
             $rate .= '.';
-            $rate .= \substr($valueString, $decimals * -1);
+            $rate .= substr($valueString, $decimals * -1);
         } else {
             $rate .= $valueString;
         }

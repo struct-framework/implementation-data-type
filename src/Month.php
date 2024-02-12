@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use function count;
+use function explode;
 use InvalidArgumentException;
+use function strlen;
 use Struct\Contracts\Operator\IncrementableInterface;
 use Struct\Contracts\SerializableToInt;
 use Struct\Exception\DeserializeException;
@@ -74,11 +77,11 @@ final class Month extends AbstractDataType implements SerializableToInt, Increme
 
     protected function _deserializeFromString(string $serializedData): void
     {
-        if (\strlen($serializedData) !== 7) {
+        if (strlen($serializedData) !== 7) {
             throw new DeserializeException('The value serialized data string must have 7 characters', 1696227826);
         }
-        $parts = \explode('-', $serializedData);
-        if (\count($parts) !== 2) {
+        $parts = explode('-', $serializedData);
+        if (count($parts) !== 2) {
             throw new DeserializeException('The value serialized data must year und month to parts separate by -', 1696227896);
         }
         $year = (int) $parts[0];

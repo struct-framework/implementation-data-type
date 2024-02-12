@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use function explode;
+use function str_starts_with;
+use function strlen;
 use Struct\Contracts\Operator\SubInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\DataType\Enum\AmountVolume;
@@ -11,6 +14,7 @@ use Struct\DataType\Enum\Currency;
 use Struct\DataType\Private\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\DataTypeException;
+use function substr;
 
 final class Amount extends AbstractDataType implements SumInterface, SubInterface
 {
@@ -74,12 +78,12 @@ final class Amount extends AbstractDataType implements SumInterface, SubInterfac
     protected function _deserializeFromString(string $serializedData): void
     {
         $negativ = false;
-        if (\str_starts_with($serializedData, '-')) {
+        if (str_starts_with($serializedData, '-')) {
             $negativ = true;
             $serializedData = substr($serializedData, 1);
         }
 
-        $parts = \explode(' ', $serializedData);
+        $parts = explode(' ', $serializedData);
         if (count($parts) !== 2) {
             throw new DeserializeException('The amount and currency must be separated by a space', 1696314552);
         }
@@ -88,9 +92,9 @@ final class Amount extends AbstractDataType implements SumInterface, SubInterfac
         $currencyCode = $parts[1];
 
         $amountVolumeCharacter = '';
-        if (\strlen($currencyCode) === 4) {
-            $amountVolumeCharacter = \substr($currencyCode, 0, 1);
-            $currencyCode = \substr($currencyCode, 1);
+        if (strlen($currencyCode) === 4) {
+            $amountVolumeCharacter = substr($currencyCode, 0, 1);
+            $currencyCode = substr($currencyCode, 1);
         }
 
         $amountVolume = AmountVolume::tryFrom($amountVolumeCharacter);
@@ -139,12 +143,12 @@ final class Amount extends AbstractDataType implements SumInterface, SubInterfac
 
         $valueString = (string) $value;
         if ($decimals > 0) {
-            while (\strlen($valueString) <= $decimals) {
+            while (strlen($valueString) <= $decimals) {
                 $valueString = '0' . $valueString;
             }
-            $amount .= \substr($valueString, 0, $decimals * -1);
+            $amount .= substr($valueString, 0, $decimals * -1);
             $amount .= '.';
-            $amount .= \substr($valueString, $decimals * -1);
+            $amount .= substr($valueString, $decimals * -1);
         } else {
             $amount .= $valueString;
         }

@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use function count;
 use DateTime;
+use DateTimeZone;
 use Exception\Unexpected\UnexpectedException;
+use function explode;
 use InvalidArgumentException;
+use function strlen;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Contracts\Operator\IncrementableInterface;
 use Struct\Contracts\SerializableToInt;
@@ -14,6 +18,7 @@ use Struct\DataType\Enum\Weekday;
 use Struct\Enum\Operator\Comparison;
 use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\CompareException;
+use Throwable;
 
 final class Date extends AbstractDataType implements SerializableToInt, ComparableInterface, IncrementableInterface
 {
@@ -78,7 +83,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         if (isset($this->day) === false) {
             return;
         }
-        $checkDate = new DateTime($this->year . '-' . $this->month . '-01', new \DateTimeZone('UTC'));
+        $checkDate = new DateTime($this->year . '-' . $this->month . '-01', new DateTimeZone('UTC'));
         $checkDate->setTime(0, 0);
         $numberOfDays = (int) $checkDate->format('t');
         if ($this->day > $numberOfDays) {
@@ -125,11 +130,11 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
 
     protected function _deserializeFromString(string $serializedData): void
     {
-        if (\strlen($serializedData) !== 10) {
+        if (strlen($serializedData) !== 10) {
             throw new DeserializeException('The value serialized data string must have 10 characters', 1696334669);
         }
-        $parts = \explode('-', $serializedData);
-        if (\count($parts) !== 3) {
+        $parts = explode('-', $serializedData);
+        if (count($parts) !== 3) {
             throw new DeserializeException('The value serialized data must have year, month and day separate by -', 1696334753);
         }
         $year = (int) $parts[0];
@@ -160,8 +165,8 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
     public function toDateTime(): DateTime
     {
         try {
-            $dateTime = new DateTime($this->serializeToString() . ' 00:00:00', new \DateTimeZone('UTC'));
-        } catch (\Throwable $exception) {
+            $dateTime = new DateTime($this->serializeToString() . ' 00:00:00', new DateTimeZone('UTC'));
+        } catch (Throwable $exception) {
             throw new UnexpectedException(1700915819, $exception);
         }
         return $dateTime;
@@ -372,7 +377,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         return $calendarWeek;
     }
 
-    public function deserializeFromDateTime(\DateTime $dateTime): void
+    public function deserializeFromDateTime(DateTime $dateTime): void
     {
         $this->_deserializeFromString($dateTime->format('Y-m-d'));
     }
