@@ -7,7 +7,7 @@ namespace Struct\DataType;
 use function explode;
 use function str_starts_with;
 use function strlen;
-use Struct\Contracts\Operator\SubInterface;
+use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\DataType\Enum\AmountVolume;
 use Struct\DataType\Enum\Currency;
@@ -16,7 +16,7 @@ use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\DataTypeException;
 use function substr;
 
-final class Amount extends AbstractDataType implements SumInterface, SubInterface
+final class Amount extends AbstractDataType implements SumInterface, SignChangeInterface
 {
     protected int $value;
     protected Currency $currency = Currency::EUR;
@@ -234,17 +234,11 @@ final class Amount extends AbstractDataType implements SumInterface, SubInterfac
         return $result;
     }
 
-    public static function sub(SubInterface $minuend, SubInterface $subtrahend): self
+    public static function signChange(SignChangeInterface $left): self
     {
-        if ($minuend instanceof self === false) {
-            throw new DataTypeException('Minuend must be of type: ' . self::class, 1696347279);
-        }
-        if ($subtrahend instanceof self === false) {
-            throw new DataTypeException('Subtrahend must be of type: ' . self::class, 1696347282);
-        }
-        $subtrahend = clone $subtrahend;
-        $subtrahend->value *= -1;
-        $result = self::sum([$minuend, $subtrahend]);
+        /** @var self $result */
+        $result = clone $left;
+        $result->setValue($result->getValue() * -1);
         return $result;
     }
 }

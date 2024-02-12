@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-use Struct\Contracts\Operator\SubInterface;
+use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\Contracts\SerializableToInt;
 use Struct\Exception\InvalidFormatException;
 use Struct\Exception\Operator\DataTypeException;
 
-final class WorkingTime extends AbstractDataType implements SerializableToInt, SumInterface, SubInterface
+final class WorkingTime extends AbstractDataType implements SerializableToInt, SumInterface, SignChangeInterface
 {
     public int $minutes = 0;
 
@@ -23,18 +23,12 @@ final class WorkingTime extends AbstractDataType implements SerializableToInt, S
         parent::__construct($serializedData);
     }
 
-    public static function sub(SubInterface $minuend, SubInterface $subtrahend): self
+    public static function signChange(SignChangeInterface $left): self
     {
-        if (
-            $minuend instanceof self === false ||
-            $subtrahend instanceof self === false
-
-        ) {
-            throw new DataTypeException('The minuend and subtrahend must be of type: ' . self::class, 1707059136);
-        }
-        $workingTime = new self();
-        $workingTime->minutes = $minuend->minutes - $subtrahend->minutes;
-        return $workingTime;
+        /** @var self $result */
+        $result = clone $left;
+        $result->minutes *= -1;
+        return $result;
     }
 
     public static function sum(array $summandList): self
