@@ -11,6 +11,19 @@ final class Binary extends AbstractDataType
 {
     protected string $binaryString = '';
 
+    public function __construct(?string $serializedData = null, bool $isBinaryString = false)
+    {
+        parent::__construct();
+        if ($serializedData === null) {
+            return;
+        }
+        if ($isBinaryString === false) {
+            $this->_deserializeFromString($serializedData);
+            return;
+        }
+        $this->binaryString = $serializedData;
+    }
+
     protected function _deserializeFromString(string $serializedData): void
     {
         $deserializedData = hex2bin($serializedData);
