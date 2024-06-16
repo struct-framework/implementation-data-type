@@ -10,9 +10,10 @@ use InvalidArgumentException;
 use function strlen;
 use Struct\Contracts\Operator\IncrementableInterface;
 use Struct\Contracts\SerializableToInt;
+use Struct\Contracts\SortableInterface;
 use Struct\Exception\DeserializeException;
 
-final class Month extends AbstractDataType implements SerializableToInt, IncrementableInterface
+final class Month extends AbstractDataType implements SerializableToInt, IncrementableInterface, SortableInterface
 {
     protected int $year;
 
@@ -112,6 +113,11 @@ final class Month extends AbstractDataType implements SerializableToInt, Increme
         $year = (int) ($serializedData / 12);
         $month = ($serializedData % 12) + 1;
         $this->setYearAndMonth($year, $month);
+    }
+
+    public function getSortValue(): int|false
+    {
+        return $this->serializeToInt();
     }
 
     public function increment(): void

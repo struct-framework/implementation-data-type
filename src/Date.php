@@ -14,13 +14,14 @@ use function strlen;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\Contracts\Operator\IncrementableInterface;
 use Struct\Contracts\SerializableToInt;
+use Struct\Contracts\SortableInterface;
 use Struct\DataType\Enum\Weekday;
 use Struct\Enum\Operator\Comparison;
 use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\CompareException;
 use Throwable;
 
-final class Date extends AbstractDataType implements SerializableToInt, ComparableInterface, IncrementableInterface
+final class Date extends AbstractDataType implements SerializableToInt, ComparableInterface, IncrementableInterface, SortableInterface
 {
     protected int $year;
 
@@ -217,6 +218,11 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         }
         $this->month = $moth + 1;
         $this->day = $remainingDays + 1;
+    }
+
+    public function getSortValue(): int|false
+    {
+        return $this->serializeToInt();
     }
 
     protected static int $dayShift = 364877;
