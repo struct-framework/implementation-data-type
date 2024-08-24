@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-
 use Struct\Exception\DeserializeException;
 
 final class Period extends AbstractDataType
 {
-
     protected Date $startDate;
     protected ?Date $endDate = null;
 
@@ -17,7 +15,7 @@ final class Period extends AbstractDataType
     protected function _deserializeFromString(string $serializedData): void
     {
         $length = strlen($serializedData);
-        if(
+        if (
             $length === 13 &&
             str_ends_with($serializedData, ' ->') === true
         ) {
@@ -25,23 +23,23 @@ final class Period extends AbstractDataType
             $this->endDate = null;
             return;
         }
-        if($length === 4) {
+        if ($length === 4) {
             $year = (int) $serializedData;
-            $this->startDate->setDate($year, 1 ,1);
-            $this->endDate->setDate($year, 12 ,31);
+            $this->startDate->setDate($year, 1, 1);
+            $this->endDate->setDate($year, 12, 31);
             return;
         }
-        if($length === 7) {
-            $year = (int) substr($serializedData,0,4);
-            $month = (int) substr($serializedData,5,2);
-            $this->startDate->setDate($year, $month ,1);
-            $this->endDate->setDate($year, $month ,1);
+        if ($length === 7) {
+            $year = (int) substr($serializedData, 0, 4);
+            $month = (int) substr($serializedData, 5, 2);
+            $this->startDate->setDate($year, $month, 1);
+            $this->endDate->setDate($year, $month, 1);
             $this->endDate = $this->endDate->lastDayOfTheYear();
             return;
         }
-        if($length === 23) {
+        if ($length === 23) {
             $this->startDate->deserializeFromString(substr($serializedData, 0, 10));
-            $this->endDate->deserializeFromString(substr($serializedData,-10));
+            $this->endDate->deserializeFromString(substr($serializedData, -10));
             return;
         }
         throw new DeserializeException('Can not deserialize period: ' . $serializedData, 1724311020);
@@ -52,21 +50,21 @@ final class Period extends AbstractDataType
     {
         $startDate = $this->startDate;
         $endDate = $this->endDate;
-        if($endDate === null) {
+        if ($endDate === null) {
             return $this->startDate->serializeToString() . ' ->';
         }
-        if(
+        if (
             $startDate->isFirstDayOfMonth() !== true ||
             $endDate->isLastDayOfMonth() !== true
         ) {
             return $this->_buildCustomSerializeToString();
         }
 
-        if($startDate->getYear() === $endDate->getYear()) {
-            if($startDate->getMonth() === $endDate->getMonth()) {
+        if ($startDate->getYear() === $endDate->getYear()) {
+            if ($startDate->getMonth() === $endDate->getMonth()) {
                 return $startDate->toMonth()->serializeToString();
             }
-            if(
+            if (
                 $startDate->getMonth() === 1 &&
                 $endDate->getMonth() === 12
             ) {

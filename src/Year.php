@@ -73,7 +73,6 @@ final class Year extends AbstractDataType implements SerializableToInt, Incremen
         $this->year--;
     }
 
-
     public function firstDayOfTheYear(): Date
     {
         $date = new Date();

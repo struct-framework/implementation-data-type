@@ -399,7 +399,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
 
     public function isFirstDayOfTheYear(): bool
     {
-        if($this->month === 1 && $this->day === 1) {
+        if ($this->month === 1 && $this->day === 1) {
             return true;
         }
         return false;
@@ -416,7 +416,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
 
     public function isLastDayOfTheYear(): bool
     {
-        if($this->month === 12 && $this->day === 31) {
+        if ($this->month === 12 && $this->day === 31) {
             return true;
         }
         return false;
@@ -440,7 +440,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
 
     public function isFirstDayOfMonth(): bool
     {
-        if($this->day === 1) {
+        if ($this->day === 1) {
             return true;
         }
         return false;
@@ -457,7 +457,7 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
 
     public function isLastDayOfMonth(): bool
     {
-        if($this->day === self::daysInMonth($this->year, $this->month)) {
+        if ($this->day === self::daysInMonth($this->year, $this->month)) {
             return true;
         }
         return false;
