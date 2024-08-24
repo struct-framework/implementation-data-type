@@ -397,6 +397,14 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         return $firstDayOfTheYear;
     }
 
+    public function isFirstDayOfTheYear(): bool
+    {
+        if($this->month === 1 && $this->day === 1) {
+            return true;
+        }
+        return false;
+    }
+
     public function lastDayOfTheYear(): self
     {
         $lastDayOfTheYear = new self();
@@ -404,6 +412,14 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $lastDayOfTheYear->month = 12;
         $lastDayOfTheYear->year = $this->year;
         return $lastDayOfTheYear;
+    }
+
+    public function isLastDayOfTheYear(): bool
+    {
+        if($this->month === 12 && $this->day === 31) {
+            return true;
+        }
+        return false;
     }
 
     public function lastDayInPreviousYear(): self
@@ -422,6 +438,14 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         return $firstDayOfMonth;
     }
 
+    public function isFirstDayOfMonth(): bool
+    {
+        if($this->day === 1) {
+            return true;
+        }
+        return false;
+    }
+
     public function lastDayOfMonth(): self
     {
         $lastDayOfMonth = new self();
@@ -429,5 +453,28 @@ final class Date extends AbstractDataType implements SerializableToInt, Comparab
         $lastDayOfMonth->setMonth($this->month);
         $lastDayOfMonth->setDay(self::daysInMonth($this->year, $this->month));
         return $lastDayOfMonth;
+    }
+
+    public function isLastDayOfMonth(): bool
+    {
+        if($this->day === self::daysInMonth($this->year, $this->month)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function toMonth(): Month
+    {
+        $month = new Month();
+        $month->setYear($this->year);
+        $month->setMonth($this->month);
+        return $month;
+    }
+
+    public function toYear(): Year
+    {
+        $year = new Year();
+        $year->setYear($this->year);
+        return $year;
     }
 }
