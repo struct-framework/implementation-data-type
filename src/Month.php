@@ -12,9 +12,16 @@ use function strlen;
 
 final readonly class Month extends AbstractDataTypeInteger
 {
-    protected int $year;
+    public int $year;
 
-    protected int $month;
+    public int $month;
+
+    public function __construct(string|int $serializedData)
+    {
+        $result = $this->_deserialize($serializedData);
+        $this->year = $result[0];
+        $this->month = $result[1];
+    }
 
     public function withMonth(int $month): self
     {
@@ -76,8 +83,14 @@ final readonly class Month extends AbstractDataTypeInteger
         return $serializedData;
     }
 
-    protected function _deserializeFromString(string $serializedData): void
+    /**
+     * @return array{0:int, 1:int}
+     */
+    protected function _deserialize(string|int $serializedData): array
     {
+        if(is_int($serializedData) === true) {
+            return $this->_deserializeFromInt($serializedData);
+        }
         if (strlen($serializedData) !== 7) {
             throw new DeserializeException('The value serialized data string must have 7 characters', 1696227826);
         }
@@ -88,9 +101,9 @@ final readonly class Month extends AbstractDataTypeInteger
         $year = (int) $parts[0];
         $month = (int) $parts[1];
 
-        $this->year = $year;
-        $this->month = $month;
+        return [$year, $month];
     }
+
 
     protected function _serializeToInt(): int
     {
@@ -99,11 +112,13 @@ final readonly class Month extends AbstractDataTypeInteger
         return $monthAsInt;
     }
 
-    protected function _deserializeFromInt(int $serializedData): void
+    /**
+     * @return array{0:int, 1:int}
+     */
+    protected function _deserializeFromInt(int $serializedData): array
     {
         $year = (int) ($serializedData / 12);
         $month = ($serializedData % 12) + 1;
-        $this->year = $year;
-        $this->month = $month;
+        return [$year, $month];
     }
 }

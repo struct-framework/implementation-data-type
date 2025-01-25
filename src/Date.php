@@ -38,88 +38,39 @@ final readonly class Date extends AbstractDataTypeInteger
 
 
 
-    protected int $year;
-    protected int $month;
-    protected int $day;
+    public int $year;
+    public int $month;
+    public int $day;
 
-    public function __construct(null|string|int|DateTime $serializedData = null)
+    public function __construct(string|int|DateTime $serializedData)
     {
-        if ($serializedData instanceof DateTime) {
-            $this->_deserializeFromDateTime($serializedData);
-            return;
+        $result = $this->_deserialize($serializedData);
+        $this->year = $result[0];
+        $this->month = $result[1];
+        $this->day = $result[2];
+        $this->_checkDay($this->year, $this->month, $this->day);
+    }
+
+
+    /**
+     * @return array{0:int, 1:int, 2:int}
+     */
+    protected function _deserialize(string|int|DateTime $serializedData): array
+    {
+        if(is_string($serializedData) === true) {
+            return $this->_deserializeFromString($serializedData);
         }
-        parent::__construct($serializedData);
-    }
-
-
-    protected function _deserializeFromDateTime(DateTime $dateTime): void
-    {
-        $this->_deserializeFromString($dateTime->format('Y-m-d'));
-    }
-
-    protected function _deserializeFromInt(int $serializedData): void
-    {
-        if ($serializedData < 0 || $serializedData > 3287181) {
-            throw new DeserializeException('The value of serialized data string must be between 0 and 3287181', 1700914014);
+        if(is_int($serializedData) === true) {
+            return $this->_deserializeFromInt($serializedData);
         }
-        $days = $serializedData;
-        $remainingDays = 0;
-        $this->year = self::calculateYearByDays($days, $remainingDays);
-        $isLeapYear = self::isLeapYear($this->year);
-        $moth = 0;
-        foreach (self::DAYS_PER_MONTH as $daysPerMonth) {
-            if ($moth === 1 && $isLeapYear === true) {
-                $daysPerMonth++;
-            }
-            if ($daysPerMonth > $remainingDays) {
-                break;
-            }
-            $moth++;
-            $remainingDays -= $daysPerMonth;
-        }
-        $this->month = $moth + 1;
-        $this->day = $remainingDays + 1;
+        return $this->_deserializeFromDateTime($serializedData);
     }
 
 
-    public function getYear(): int
-    {
-        return $this->year;
-    }
-
-    public function getMonth(): int
-    {
-        return $this->month;
-    }
-
-    public function getDay(): int
-    {
-        return $this->day;
-    }
-
-    protected function _serializeToString(): string
-    {
-        $yearString = (string) $this->year;
-        $monthString = (string) $this->month;
-        $dayString = (string) $this->day;
-        if (strlen($monthString) === 1) {
-            $monthString = '0' . $monthString;
-        }
-        if (strlen($dayString) === 1) {
-            $dayString = '0' . $dayString;
-        }
-        $serializedData = $yearString . '-' . $monthString . '-' . $dayString;
-        return $serializedData;
-    }
-
-    public function reset(): void
-    {
-        $this->year = 1000;
-        $this->month = 1;
-        $this->day = 1;
-    }
-
-    protected function _deserializeFromString(string $serializedData): void
+    /**
+     * @return array{0:int, 1:int, 2:int}
+     */
+    protected function _deserializeFromString(string $serializedData): array
     {
         if (strlen($serializedData) !== 10) {
             throw new DeserializeException('The value serialized data string must have 10 characters', 1696334669);
@@ -131,17 +82,58 @@ final readonly class Date extends AbstractDataTypeInteger
         $year = (int) $parts[0];
         $month = (int) $parts[1];
         $day = (int) $parts[2];
-
-
-        $this->_checkYear($year);
-        $this->year = $year;
-
-        $this->_checkMonth($month);
-        $this->month = $month;
-
-        $this->_checkDay($year, $month, $day);
-        $this->day = $day;
+        return [$year, $month, $day];
     }
+
+    /**
+     * @return array{0:int, 1:int, 2:int}
+     */
+    protected function _deserializeFromInt(int $serializedData): array
+    {
+        if ($serializedData < 0 || $serializedData > 3287181) {
+            throw new DeserializeException('The value of serialized data string must be between 0 and 3287181', 1700914014);
+        }
+        $days = $serializedData;
+        $remainingDays = 0;
+        $year = self::calculateYearByDays($days, $remainingDays);
+        $isLeapYear = self::isLeapYear($year);
+        $month = 0;
+        foreach (self::DAYS_PER_MONTH as $daysPerMonth) {
+            if ($month === 1 && $isLeapYear === true) {
+                $daysPerMonth++;
+            }
+            if ($daysPerMonth > $remainingDays) {
+                break;
+            }
+            $month++;
+            $remainingDays -= $daysPerMonth;
+        }
+        $month++;
+        $day = $remainingDays + 1;
+
+        return [
+            $year,
+            $month,
+            $day,
+        ];
+    }
+
+    /**
+     * @return array{0:int, 1:int, 2:int}
+     */
+    protected function _deserializeFromDateTime(DateTime $dateTime): array
+    {
+        return $this->_deserializeFromString($dateTime->format('Y-m-d'));
+    }
+
+
+    protected function _serializeToString(): string
+    {
+        $serializedData = self::_yearMonthDayToString($this->year, $this->month, $this->day);
+        return $serializedData;
+    }
+
+
 
     public function toDateTime(): DateTime
     {
@@ -314,11 +306,8 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function firstDayOfTheYear(): self
     {
-        $firstDayOfTheYear = new self();
-        $firstDayOfTheYear->day = 1;
-        $firstDayOfTheYear->month = 1;
-        $firstDayOfTheYear->year = $this->year;
-        return $firstDayOfTheYear;
+        $date = self::createByYearMonthDay($this->year, 1, 1);
+        return $date;
     }
 
     public function isFirstDayOfTheYear(): bool
@@ -331,8 +320,8 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function lastDayOfTheYear(): self
     {
-        $lastDayOfTheYear = new self($this->year .'-12-31');
-        return $lastDayOfTheYear;
+        $date = self::createByYearMonthDay($this->year, 12, 31);
+        return $date;
     }
 
     public function isLastDayOfTheYear(): bool
@@ -380,64 +369,14 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function toMonth(): Month
     {
-        $month = new Month();
-        $month->setYear($this->year);
-        $month->setMonth($this->month);
+        $month = new Month($this->year . '-' . $this->month);
         return $month;
     }
 
     public function toYear(): Year
     {
-        $year = new Year();
-        $year->setYear($this->year);
+        $year = new Year($this->year);
         return $year;
-    }
-
-    protected function _checkYear(int $year): void
-    {
-        if ($year < 1000 || $year > 9999) {
-            throw new InvalidArgumentException('The year must be between 1000 and 9999', 1696052931);
-        }
-    }
-
-    protected function _checkMonth(int $month): void
-    {
-        if ($month < 1 || $month > 12) {
-            throw new InvalidArgumentException('The month must be between 1 and 12', 1696052867);
-        }
-    }
-
-
-    protected function _checkDay(int $year, int $month, int $day): void
-    {
-        if ($day < 1 || $day > 31) {
-            throw new InvalidArgumentException('The day must be between 1 and 31', 1696052931);
-        }
-        try {
-            $checkDate = new DateTime($year . '-' . $month . '-01', new DateTimeZone('UTC'));
-        } catch (DateMalformedStringException $exception) {
-            throw new InvalidArgumentException('The month: ' . $month . ' in the year: ' . $year . ' is invalid', 1737440017, $exception);
-        }
-        $checkDate->setTime(0, 0);
-        $numberOfDays = (int) $checkDate->format('t');
-        if ($day > $numberOfDays) {
-            throw new InvalidArgumentException('The month: ' . $month . ' in the year: ' . $year . ' has only: ' . $numberOfDays . ' days. Given: ' . $day, 1696334057);
-        }
-    }
-
-
-    protected function checkDay(): void
-    {
-        if (isset($this->year) === false) {
-            return;
-        }
-        if (isset($this->month) === false) {
-            return;
-        }
-        if (isset($this->day) === false) {
-            return;
-        }
-        $this->_checkDay($this->year, $this->month, $this->day);
     }
 
     public function withYear(int $year): self
@@ -460,17 +399,38 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public static function createByYearMonthDay(int $year, int $month, int $day): self
     {
+        $serializedData = self::_yearMonthDayToString($year, $month, $day);
+        $date = new self($serializedData);
+        return $date;
+    }
+
+    protected static function _yearMonthDayToString(int $year, int $month, int $day): string
+    {
         $yearString = (string) $year;
         $monthString = (string) $month;
         $dayString = (string) $day;
-
-        if(strlen($monthString) === 1) {
+        if (strlen($monthString) === 1) {
             $monthString = '0' . $monthString;
         }
-        if(strlen($dayString) === 1) {
+        if (strlen($dayString) === 1) {
             $dayString = '0' . $dayString;
         }
-        $date = new self($yearString. '-'. $monthString. '-'. $dayString);
-        return $date;
+        $serializedData = $yearString . '-' . $monthString . '-' . $dayString;
+        return $serializedData;
     }
+
+    protected function _checkDay(int $year, int $month, int $day): void
+    {
+        if ($year < 1000 || $year > 9999) {
+            throw new InvalidArgumentException('The year must be between 1000 and 9999', 1737815639);
+        }
+        if ($month < 1 || $month > 12) {
+            throw new InvalidArgumentException('The month must be between 1 and 12', 1737815636);
+        }
+        $days = self::daysInMonth($year, $month);
+        if ($day < 1 || $day > $days) {
+            throw new InvalidArgumentException('The day must be between 1 and ' . $days, 1737815642);
+        }
+    }
+
 }

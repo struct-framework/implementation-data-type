@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+
+use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Exception\InvalidFormatException;
 use Struct\Exception\Operator\DataTypeException;
 
-final readonly class WorkingTime extends AbstractDataTypeInteger
+final readonly class WorkingTime extends AbstractDataTypeSum implements SignChangeInterface
 {
     /**
      * @var array<string, int>
@@ -24,7 +26,8 @@ final readonly class WorkingTime extends AbstractDataTypeInteger
 
     public function __construct(string|int $serializedData)
     {
-        parent::__construct($serializedData);
+        $minutes  = $this->_deserialize($serializedData);
+        $this->minutes = $minutes;
     }
 
 
@@ -33,32 +36,13 @@ final readonly class WorkingTime extends AbstractDataTypeInteger
         return $this->minutes;
     }
 
-
-    protected function _deserializeFromInt(int $serializedData): void
+    protected function _deserialize(int|string $serializedData): int
     {
-        $this->minutes = $serializedData;
-    }
-
-
-    public static function sum(array $summandList): self
-    {
-        $minutes  = 0;
-        foreach ($summandList as $summand) {
-            if ($summand instanceof self === false) {
-                throw new DataTypeException('All summand must be of type: ' . self::class, 1707058977);
-            }
-            $minutes += $summand->minutes;
+        if(is_int($serializedData) === true) {
+            return $serializedData;
         }
-        $workingTime = new self();
-        $workingTime->minutes = $minutes;
-        return $workingTime;
-    }
-
-    protected function _deserializeFromString(string $serializedData): void
-    {
         if ($serializedData === '') {
-            $this->minutes = 0;
-            return;
+            return 0;
         }
 
         $isNegative = false;
@@ -71,7 +55,7 @@ final readonly class WorkingTime extends AbstractDataTypeInteger
         $parts = explode(' ', $serializedData);
 
         foreach ($parts as $part) {
-            foreach ($this->steps as $key => $value) {
+            foreach (self::STEPS as $key => $value) {
                 if (str_ends_with($part, $key) === false) {
                     continue;
                 }
@@ -93,7 +77,7 @@ final readonly class WorkingTime extends AbstractDataTypeInteger
         if ($isNegative === true) {
             $minutes *= -1;
         }
-        $this->minutes = $minutes;
+        return $minutes;
     }
 
     protected function _serializeToString(): string
@@ -105,7 +89,7 @@ final readonly class WorkingTime extends AbstractDataTypeInteger
             $isNegative = true;
         }
         $parts = [];
-        foreach ($this->steps as $key => $step) {
+        foreach (self::STEPS as $key => $step) {
             $part = (int) ($minutes / $step);
             $minutes -= $part * $step;
 
@@ -118,5 +102,13 @@ final readonly class WorkingTime extends AbstractDataTypeInteger
             $output = '- ' . $output;
         }
         return $output;
+    }
+
+    public static function signChange(SignChangeInterface $left): self
+    {
+        if ($left instanceof static === false) {
+            throw new DataTypeException('The value must be of DataType: ' . static::class, 1737818254);
+        }
+        return new static($left->serializeToInt() * -1);
     }
 }

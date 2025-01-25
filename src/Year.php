@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace Struct\DataType;
 
 use Struct\Exception\DeserializeException;
-use function strlen;
 
 final readonly class Year extends AbstractDataTypeInteger
 {
-    protected int $year;
+    public int $year;
 
-    public function getYear(): int
+    public function __construct(string|int $serializedData)
     {
-        return $this->year;
+        $year = (int) $serializedData;
+        if ($year < 1000 || $year > 9999) {
+            throw new DeserializeException('The value serialized data $year string must be between 1000 and 9999', 1737809871);
+        }
+        $this->year = $year;
     }
 
     protected function _serializeToString(): string
@@ -22,23 +25,9 @@ final readonly class Year extends AbstractDataTypeInteger
         return $serializedData;
     }
 
-    protected function _deserializeFromString(string $serializedData): void
-    {
-        if (strlen($serializedData) !== 4) {
-            throw new DeserializeException('The value serialized data string must have 4 characters', 1724309918);
-        }
-        $this->year = (int) $serializedData;
-    }
-
     protected function _serializeToInt(): int
     {
         return $this->year;
-    }
-
-
-    protected function _deserializeFromInt(int $serializedData): void
-    {
-        $this->year = $serializedData;
     }
 
 

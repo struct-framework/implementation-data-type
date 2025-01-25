@@ -4,29 +4,17 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Exception\Operator\DataTypeException;
 
-final readonly class WorkingHour extends AbstractDataTypeInteger
+final readonly class WorkingHour extends AbstractDataTypeSum implements SignChangeInterface
 {
     public int $minutes;
 
     public function __construct(string|int $serializedData)
     {
-        parent::__construct($serializedData);
-    }
-
-    public static function sum(array $summandList): self
-    {
-        $minutes  = 0;
-        foreach ($summandList as $summand) {
-            if ($summand instanceof self === false) {
-                throw new DataTypeException('All summand must be of type: ' . self::class, 1707058977);
-            }
-            $minutes += $summand->minutes;
-        }
-        $workingTime = new self();
-        $workingTime->minutes = $minutes;
-        return $workingTime;
+        $minutes = $this->_deserialize($serializedData);
+        $this->minutes = $minutes;
     }
 
     protected function _serializeToInt(): int
@@ -34,20 +22,11 @@ final readonly class WorkingHour extends AbstractDataTypeInteger
         return $this->minutes;
     }
 
-
-    protected function _deserializeFromInt(int $serializedData): void
+    protected function _deserialize(string|int $serializedData): int
     {
-        $this->minutes = $serializedData;
-    }
-
-
-    protected function _deserializeFromString(string $serializedData): void
-    {
-        $this->minutes = self::intFromString($serializedData);
-    }
-
-    protected static function intFromString(string $serializedData): int
-    {
+        if(is_int($serializedData) === true) {
+            return $serializedData;
+        }
         if ($serializedData === '') {
             return 0;
         }
@@ -89,4 +68,14 @@ final readonly class WorkingHour extends AbstractDataTypeInteger
         $output .= substr($hours, $length - 2);
         return $output;
     }
+
+    public static function signChange(SignChangeInterface $left): self
+    {
+        if ($left instanceof static === false) {
+            throw new DataTypeException('The value must be of DataType: ' . static::class, 1737818254);
+        }
+        return new static($left->serializeToInt() * -1);
+    }
+
+
 }

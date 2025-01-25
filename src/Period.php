@@ -9,84 +9,83 @@ use Struct\Exception\DeserializeException;
 final readonly class Period extends AbstractDataType
 
 {
-    protected Date $startDate;
-    protected ?Date $endDate;
+    public Date $startDate;
+    public ?Date $endDate;
 
-    #[\Override]
-    protected function _deserializeFromString(string $serializedData): void
+    public function __construct(string $serializedData)
     {
+        $result = $this->_deserialize($serializedData);
+        $this->startDate = $result[0];
+        $this->endDate = $result[1];
+    }
+
+    /**
+     * @return array{0:Date, 1:Date|null}
+     */
+    protected function _deserialize(string $serializedData): array
+    {
+        $startDate = null;
+        $endDate = null;
         $length = strlen($serializedData);
         if (
             $length === 13 &&
             str_ends_with($serializedData, ' ->') === true
         ) {
-            $this->startDate = new Date(substr($serializedData, 0, 10));
-            $this->endDate = null;
-            return;
+            $startDate = new Date(substr($serializedData, 0, 10));
         }
         if ($length === 4) {
             $year = (int) $serializedData;
-            $this->startDate = Date::createByYearMonthDay($year, 1, 1);
-            $this->endDate = Date::createByYearMonthDay($year, 12, 31);
-            return;
+            $startDate = Date::createByYearMonthDay($year, 1, 1);
+            $endDate = Date::createByYearMonthDay($year, 12, 31);
         }
         if ($length === 7) {
             $year = (int) substr($serializedData, 0, 4);
             $month = (int) substr($serializedData, 5, 2);
-            $this->startDate = Date::createByYearMonthDay($year, $month, 1);
-            $this->endDate = Date::createByYearMonthDay($year, 12, 31);
-            return;
+            $startDate = Date::createByYearMonthDay($year, $month, 1);
+            $endDate = Date::createByYearMonthDay($year, 12, 31);
         }
         if ($length === 23) {
-            $this->startDate = new Date(substr($serializedData, 0, 10));
-            $this->endDate = new Date(substr($serializedData, -10));
-            return;
+            $startDate = new Date(substr($serializedData, 0, 10));
+            $endDate = new Date(substr($serializedData, -10));
         }
-        throw new DeserializeException('Can not deserialize period: ' . $serializedData, 1724311020);
+        if($startDate === null) {
+            throw new DeserializeException('Can not deserialize period: ' . $serializedData, 1724311020);
+        }
+        return [
+            $startDate,
+            $endDate,
+        ];
     }
 
-    #[\Override]
     protected function _serializeToString(): string
     {
-        $startDate = $this->startDate;
-        $endDate = $this->endDate;
-        if ($endDate === null) {
+        if ($this->endDate === null) {
             return $this->startDate->serializeToString() . ' ->';
         }
+        $startDate = $this->startDate;
+        $endDate = $this->endDate;
         if (
             $startDate->isFirstDayOfMonth() !== true ||
             $endDate->isLastDayOfMonth() !== true
         ) {
-            return $this->_buildCustomSerializeToString();
+            return $this->_buildCustomSerializeToString($startDate, $endDate);
         }
-
-        if ($startDate->getYear() === $endDate->getYear()) {
-            if ($startDate->getMonth() === $endDate->getMonth()) {
+        if ($startDate->year === $endDate->year) {
+            if ($startDate->month === $endDate->month) {
                 return $startDate->toMonth()->serializeToString();
             }
             if (
-                $startDate->getMonth() === 1 &&
-                $endDate->getMonth() === 12
+                $startDate->month === 1 &&
+                $endDate->month === 12
             ) {
                 return $startDate->toYear()->serializeToString();
             }
         }
-
-        return $this->_buildCustomSerializeToString();
+        return $this->_buildCustomSerializeToString($startDate, $endDate);
     }
 
-    protected function _buildCustomSerializeToString(): string
+    protected function _buildCustomSerializeToString(Date $startDate, Date $endDate): string
     {
-        return $this->startDate->serializeToString() . ' - ' . $this->endDate->serializeToString();
-    }
-
-    public function getStartDate(): Date
-    {
-        return $this->startDate;
-    }
-
-    public function getEndDate(): ?Date
-    {
-        return $this->endDate;
+        return $startDate->serializeToString() . ' - ' . $endDate->serializeToString();
     }
 }

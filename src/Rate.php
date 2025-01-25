@@ -12,44 +12,40 @@ use function substr;
 
 final readonly class Rate extends AbstractDataType
 {
-    protected int $value;
-    protected RateType $rateType;
-    protected int $decimals;
+    public int $value;
+    public int $decimals;
+    public RateType $rateType;
 
-    public function getValue(): int
+    public function __construct(string $serializedData)
     {
-        return $this->value;
+        $result = $this->_deserialize($serializedData);
+        $this->value = $result[0];
+        $this->decimals = $result[1];
+        $this->rateType = $result[2];
     }
 
-    public function getRateType(): RateType
-    {
-        return $this->rateType;
-    }
-
-    public function getDecimals(): int
-    {
-        return $this->decimals;
-    }
-    protected function _deserializeFromString(string $serializedData): void
+    /**
+     * @return array{0:int, 1:int, 2:RateType}
+     */
+    protected function _deserialize(string $serializedData): array
     {
         $parts = explode(' ', $serializedData);
         if (count($parts) !== 2) {
             throw new DeserializeException('The value must have an rate type % or ‰ seperated by an space', 1696348899);
         }
-
         $valueString = $parts[0];
         $rateTypeString = $parts[1];
         $rateType = RateType::tryFrom($rateTypeString);
         if ($rateType === null) {
             throw new DeserializeException('The rate type must be % or ‰', 1696348977);
         }
-
         $numberArray = NumberStringToNumberInt::numberStringToNumberInt($valueString);
         list($value, $decimals) = $numberArray;
-
-        $this->value = $value;
-        $this->rateType = $rateType;
-        $this->decimals = $decimals;
+        return [
+            $value,
+            $decimals,
+            $rateType,
+        ];
     }
 
     protected function _serializeToString(): string

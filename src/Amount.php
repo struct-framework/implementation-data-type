@@ -17,25 +17,24 @@ use function substr;
 
 final readonly class Amount extends AbstractDataType implements SumInterface, SignChangeInterface
 {
-    protected int $value;
-    protected Currency $currency;
-    protected int $decimals;
+    public int $value;
+    public int $decimals;
+    public Currency $currency;
 
-    public function getValue(): int
+    public function __construct(string $serializedData)
     {
-        return $this->value;
-    }
-    public function getCurrency(): Currency
-    {
-        return $this->currency;
-    }
-
-    public function getDecimals(): int
-    {
-        return $this->decimals;
+        $result = $this->_deserialize($serializedData);
+        $this->value = $result[0];
+        $this->decimals = $result[1];
+        $this->currency = $result[2];
     }
 
-    protected function _deserializeFromString(string $serializedData): void
+
+    /**
+     * @param string $serializedData
+     * @return array{0: int, 1: int, 2: Currency}
+     */
+    protected function _deserialize(string $serializedData): array
     {
         $negative = false;
         if (str_starts_with($serializedData, '-')) {
@@ -66,13 +65,11 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
             $value *= -1;
         }
 
-        $this->value = $value;
-        $this->decimals = $decimals;
-        $this->currency = $currency;
+        return [$value, $decimals, $currency];
     }
 
 
-    protected static function createString(int $value, Currency $currency, $decimals = 2): string
+    protected static function createString(int $value, Currency $currency, int $decimals = 2): string
     {
         $negative = false;
         if ($value < 0) {
@@ -100,7 +97,7 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
         return $amount;
     }
 
-    public static function create(int $value, Currency $currency, $decimals = 2): self
+    public static function create(int $value, Currency $currency, int $decimals = 2): self
     {
         $string = self::createString($value, $currency, $decimals);
         return new self($string);
@@ -116,8 +113,8 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
         $decimals = 0;
         $currency = null;
 
-        if (count($summandList) === 0) {
-            throw new DataTypeException('There must be at least one summand', 1696344667);
+        if(count($summandList) === 0) {
+            throw new DataTypeException('The summand list is empty', 1696314552);
         }
 
         foreach ($summandList as $summand) {
@@ -130,14 +127,12 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
             if ($summand->currency !== $currency) {
                 throw new DataTypeException('All summand must have the same currency', 1696344461);
             }
-            if ($summand->getDecimals() > $decimals) {
-                $decimals = $summand->getDecimals();
+            if ($summand->decimals > $decimals) {
+                $decimals = $summand->decimals;
             }
         }
-
         $sum = 0;
-
-        /** @var Amount $summand */
+        /** @var self $summand */
         foreach ($summandList as $summand) {
             $tensShift = 10 ** ($decimals - $summand->decimals);
             $value = $summand->value * $tensShift;

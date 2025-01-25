@@ -15,24 +15,9 @@ use Struct\Exception\Operator\CompareException;
 
 readonly abstract class AbstractDataTypeInteger extends AbstractDataType implements SerializableToInt, ComparableInterface, SortableInterface, IncrementableInterface
 {
-    public function __construct(string|int $serializedData)
-    {
-        if(is_int($serializedData) === true){
-            $this->_deserializeFromInt($serializedData);
-            return;
-        }
-        parent::__construct($serializedData);
-    }
-
     protected function _serializeToInt(): int
     {
         throw new RuntimeException('Must be implemented', 1696233161);
-    }
-
-
-    protected function _deserializeFromInt(int $serializedData): void
-    {
-        throw new RuntimeException('Must be implemented', 1737446244);
     }
 
     public function serializeToInt(): int
@@ -40,10 +25,11 @@ readonly abstract class AbstractDataTypeInteger extends AbstractDataType impleme
         return $this->_serializeToInt();
     }
 
+
     public function compare(ComparableInterface $compareWith): Comparison
     {
         $selfClassName = get_class($this);
-        if ($compareWith::class !== $selfClassName) {
+        if ($compareWith instanceof self === false) {
             throw new CompareException('You can only compare same DataTypes try to compare <' .$selfClassName .'> with <'.$compareWith::class.'>', 1737446643);
         }
         $left = $this->serializeToInt();
@@ -56,7 +42,6 @@ readonly abstract class AbstractDataTypeInteger extends AbstractDataType impleme
         }
         return Comparison::equal;
     }
-
 
     public function getSortValue(): int|false
     {
