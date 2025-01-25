@@ -3,7 +3,7 @@
   "license": "MIT",
   "description": "Simple package to provide data types: Amount, Date, Month, Rate",
   "require": {
-    "php": "^8.4.0",
+    "php": "^8.3.0",
     "struct/contracts": "^1.6.0",
     "struct/contracts-operator": "^1.6.0"
   },
