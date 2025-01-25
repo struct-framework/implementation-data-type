@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+
 use function bin2hex;
 use function hex2bin;
 
-final class Binary extends AbstractDataType
+final readonly class Binary extends AbstractDataType
 {
-    protected string $binaryString = '';
+    protected string $binaryString;
 
     public function __construct(?string $serializedData = null, bool $isBinaryString = false)
     {

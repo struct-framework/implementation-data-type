@@ -6,10 +6,11 @@ namespace Struct\DataType;
 
 use Struct\Exception\DeserializeException;
 
-final class Period extends AbstractDataType
+final readonly class Period extends AbstractDataType
+
 {
     protected Date $startDate;
-    protected ?Date $endDate = null;
+    protected ?Date $endDate;
 
     #[\Override]
     protected function _deserializeFromString(string $serializedData): void
@@ -19,27 +20,26 @@ final class Period extends AbstractDataType
             $length === 13 &&
             str_ends_with($serializedData, ' ->') === true
         ) {
-            $this->startDate->deserializeFromString(substr($serializedData, 0, 10));
+            $this->startDate = new Date(substr($serializedData, 0, 10));
             $this->endDate = null;
             return;
         }
         if ($length === 4) {
             $year = (int) $serializedData;
-            $this->startDate->setDate($year, 1, 1);
-            $this->endDate->setDate($year, 12, 31);
+            $this->startDate = Date::createByYearMonthDay($year, 1, 1);
+            $this->endDate = Date::createByYearMonthDay($year, 12, 31);
             return;
         }
         if ($length === 7) {
             $year = (int) substr($serializedData, 0, 4);
             $month = (int) substr($serializedData, 5, 2);
-            $this->startDate->setDate($year, $month, 1);
-            $this->endDate->setDate($year, $month, 1);
-            $this->endDate = $this->endDate->lastDayOfTheYear();
+            $this->startDate = Date::createByYearMonthDay($year, $month, 1);
+            $this->endDate = Date::createByYearMonthDay($year, 12, 31);
             return;
         }
         if ($length === 23) {
-            $this->startDate->deserializeFromString(substr($serializedData, 0, 10));
-            $this->endDate->deserializeFromString(substr($serializedData, -10));
+            $this->startDate = new Date(substr($serializedData, 0, 10));
+            $this->endDate = new Date(substr($serializedData, -10));
             return;
         }
         throw new DeserializeException('Can not deserialize period: ' . $serializedData, 1724311020);
@@ -85,18 +85,8 @@ final class Period extends AbstractDataType
         return $this->startDate;
     }
 
-    public function setStartDate(Date $startDate): void
-    {
-        $this->startDate = $startDate;
-    }
-
     public function getEndDate(): ?Date
     {
         return $this->endDate;
-    }
-
-    public function setEndDate(?Date $endDate): void
-    {
-        $this->endDate = $endDate;
     }
 }

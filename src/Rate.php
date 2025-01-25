@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-use function strlen;
 use Struct\DataType\Enum\RateType;
 use Struct\DataType\Private\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
+use function strlen;
 use function substr;
 
-final class Rate extends AbstractDataType
+final readonly class Rate extends AbstractDataType
 {
     protected int $value;
     protected RateType $rateType;
@@ -21,41 +21,15 @@ final class Rate extends AbstractDataType
         return $this->value;
     }
 
-    public function setValue(int $value): void
-    {
-        $this->value = $value;
-    }
-
     public function getRateType(): RateType
     {
         return $this->rateType;
-    }
-
-    public function setRateType(RateType $rateType): void
-    {
-        $this->rateType = $rateType;
     }
 
     public function getDecimals(): int
     {
         return $this->decimals;
     }
-
-    public function setDecimals(int $decimals): void
-    {
-        $this->decimals = $decimals;
-    }
-
-    public function setRate(
-        int $value,
-        RateType $rateType = RateType::Percent,
-        int $decimals = 2
-    ): void {
-        $this->value = $value;
-        $this->rateType = $rateType;
-        $this->decimals = $decimals;
-    }
-
     protected function _deserializeFromString(string $serializedData): void
     {
         $parts = explode(' ', $serializedData);

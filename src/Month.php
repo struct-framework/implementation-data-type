@@ -4,41 +4,43 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use InvalidArgumentException;
+use Struct\Exception\DeserializeException;
 use function count;
 use function explode;
-use InvalidArgumentException;
 use function strlen;
-use Struct\Contracts\Operator\IncrementableInterface;
-use Struct\Contracts\SerializableToInt;
-use Struct\Contracts\SortableInterface;
-use Struct\Exception\DeserializeException;
 
-final class Month extends AbstractDataType implements SerializableToInt, IncrementableInterface, SortableInterface
+final readonly class Month extends AbstractDataTypeInteger
 {
     protected int $year;
 
     protected int $month;
 
-    public function setMonth(int $month): void
+    public function withMonth(int $month): self
     {
         if ($month < 1 || $month > 12) {
             throw new InvalidArgumentException('The month must be between 1 and 12', 1696052867);
         }
-        $this->month = $month;
+        return self::createByYearMonth($this->year, $month);
     }
 
-    public function setYear(int $year): void
+    public function withYear(int $year): self
     {
         if ($year < 1000 || $year > 9999) {
             throw new InvalidArgumentException('The year must be between 1000 and 9999', 1696052931);
         }
-        $this->year = $year;
+        return self::createByYearMonth($year, $this->month);
     }
 
-    public function setYearAndMonth(int $year, int $month): void
+    public static function createByYearMonth(int $year, int $month): self
     {
-        $this->setYear($year);
-        $this->setMonth($month);
+        $yearString = (string) $year;
+        $monthString = (string) $month;
+        if(strlen($monthString) === 1) {
+            $monthString = '0' . $monthString;
+        }
+        $date = new self($yearString. '-'. $monthString);
+        return $date;
     }
 
     public function getYear(): int
@@ -53,17 +55,15 @@ final class Month extends AbstractDataType implements SerializableToInt, Increme
 
     public function firstDayOfMonth(): Date
     {
-        $date = new Date();
-        $date->setYear($this->year);
-        $date->setMonth($this->month);
-        $date->setDay(1);
+        $date = Date::createByYearMonthDay($this->year, $this->month, 1);
         return $date;
     }
 
     public function lastDayOfMonth(): Date
     {
         $firstDayOfMonth = $this->firstDayOfMonth();
-        return $firstDayOfMonth->lastDayOfMonth();
+        $date = $firstDayOfMonth->lastDayOfMonth();
+        return $date;
     }
 
     protected function _serializeToString(): string
@@ -88,53 +88,22 @@ final class Month extends AbstractDataType implements SerializableToInt, Increme
         $year = (int) $parts[0];
         $month = (int) $parts[1];
 
-        try {
-            $this->setYear($year);
-        } catch (InvalidArgumentException $exception) {
-            throw new DeserializeException('Invalid year: ' . $exception->getMessage(), 1696228152, $exception);
-        }
-
-        try {
-            $this->setMonth($month);
-        } catch (InvalidArgumentException $exception) {
-            throw new DeserializeException('Invalid month: ' . $exception->getMessage(), 1696228168, $exception);
-        }
+        $this->year = $year;
+        $this->month = $month;
     }
 
-    public function serializeToInt(): int
+    protected function _serializeToInt(): int
     {
         $monthAsInt = $this->year * 12;
         $monthAsInt += $this->month - 1;
         return $monthAsInt;
     }
 
-    public function deserializeFromInt(int $serializedData): void
+    protected function _deserializeFromInt(int $serializedData): void
     {
         $year = (int) ($serializedData / 12);
         $month = ($serializedData % 12) + 1;
-        $this->setYearAndMonth($year, $month);
-    }
-
-    public function getSortValue(): int|false
-    {
-        return $this->serializeToInt();
-    }
-
-    public function increment(): void
-    {
-        $this->month++;
-        if ($this->month > 12) {
-            $this->month = 1;
-            $this->year++;
-        }
-    }
-
-    public function decrement(): void
-    {
-        $this->month--;
-        if ($this->month < 1) {
-            $this->month = 12;
-            $this->year--;
-        }
+        $this->year = $year;
+        $this->month = $month;
     }
 }

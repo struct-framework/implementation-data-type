@@ -4,32 +4,41 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-use Struct\Contracts\Operator\SignChangeInterface;
-use Struct\Contracts\Operator\SumInterface;
-use Struct\Contracts\SerializableToInt;
 use Struct\Exception\InvalidFormatException;
 use Struct\Exception\Operator\DataTypeException;
 
-final class WorkingTime extends AbstractDataType implements SerializableToInt, SumInterface, SignChangeInterface
+final readonly class WorkingTime extends AbstractDataTypeInteger
 {
-    public int $minutes = 0;
+    /**
+     * @var array<string, int>
+     */
+    protected const array STEPS = [
+        'mo' => 48000,
+        'w' => 2400,
+        'd' => 480,
+        'h' => 60,
+        'm' => 1
+    ];
 
-    public function __construct(string|int|null $serializedData = null)
+    public int $minutes;
+
+    public function __construct(string|int $serializedData)
     {
-        if (is_int($serializedData) === true) {
-            $this->minutes = $serializedData;
-            return;
-        }
         parent::__construct($serializedData);
     }
 
-    public static function signChange(SignChangeInterface $left): self
+
+    protected function _serializeToInt(): int
     {
-        /** @var self $result */
-        $result = clone $left;
-        $result->minutes *= -1;
-        return $result;
+        return $this->minutes;
     }
+
+
+    protected function _deserializeFromInt(int $serializedData): void
+    {
+        $this->minutes = $serializedData;
+    }
+
 
     public static function sum(array $summandList): self
     {
@@ -44,27 +53,6 @@ final class WorkingTime extends AbstractDataType implements SerializableToInt, S
         $workingTime->minutes = $minutes;
         return $workingTime;
     }
-
-    public function serializeToInt(): int
-    {
-        return $this->minutes;
-    }
-
-    public function deserializeFromInt(int $serializedData): void
-    {
-        $this->minutes = $serializedData;
-    }
-
-    /**
-     * @var array<string, int>
-     */
-    protected array $steps = [
-        'mo' => 48000,
-        'w' => 2400,
-        'd' => 480,
-        'h' => 60,
-        'm' => 1
-    ];
 
     protected function _deserializeFromString(string $serializedData): void
     {

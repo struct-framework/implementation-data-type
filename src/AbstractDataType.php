@@ -7,13 +7,10 @@ namespace Struct\DataType;
 use RuntimeException;
 use Struct\Contracts\DataTypeInterface;
 
-abstract class AbstractDataType implements DataTypeInterface
+readonly abstract class AbstractDataType implements DataTypeInterface
 {
-    public function __construct(?string $serializedData = null)
+    public function __construct(string $serializedData)
     {
-        if ($serializedData === null) {
-            return;
-        }
         $this->_deserializeFromString($serializedData);
     }
 
@@ -30,11 +27,6 @@ abstract class AbstractDataType implements DataTypeInterface
     public function serializeToString(): string
     {
         return $this->_serializeToString();
-    }
-
-    public function deserializeFromString(string $serializedData): void
-    {
-        $this->_deserializeFromString($serializedData);
     }
 
     public function __toString(): string

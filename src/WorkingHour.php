@@ -4,30 +4,15 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-use Struct\Contracts\Operator\SignChangeInterface;
-use Struct\Contracts\Operator\SumInterface;
-use Struct\Contracts\SerializableToInt;
 use Struct\Exception\Operator\DataTypeException;
 
-final class WorkingHour extends AbstractDataType implements SerializableToInt, SumInterface, SignChangeInterface
+final readonly class WorkingHour extends AbstractDataTypeInteger
 {
-    public int $minutes = 0;
+    public int $minutes;
 
-    public function __construct(string|int|null $serializedData = null)
+    public function __construct(string|int $serializedData)
     {
-        if (is_int($serializedData) === true) {
-            $this->minutes = $serializedData;
-            return;
-        }
         parent::__construct($serializedData);
-    }
-
-    public static function signChange(SignChangeInterface $left): self
-    {
-        /** @var self $result */
-        $result = clone $left;
-        $result->minutes *= -1;
-        return $result;
     }
 
     public static function sum(array $summandList): self
@@ -44,21 +29,27 @@ final class WorkingHour extends AbstractDataType implements SerializableToInt, S
         return $workingTime;
     }
 
-    public function serializeToInt(): int
+    protected function _serializeToInt(): int
     {
         return $this->minutes;
     }
 
-    public function deserializeFromInt(int $serializedData): void
+
+    protected function _deserializeFromInt(int $serializedData): void
     {
         $this->minutes = $serializedData;
     }
 
+
     protected function _deserializeFromString(string $serializedData): void
     {
+        $this->minutes = self::intFromString($serializedData);
+    }
+
+    protected static function intFromString(string $serializedData): int
+    {
         if ($serializedData === '') {
-            $this->minutes = 0;
-            return;
+            return 0;
         }
         $isNegative = false;
         if (str_starts_with($serializedData, '- ') === true) {
@@ -66,10 +57,11 @@ final class WorkingHour extends AbstractDataType implements SerializableToInt, S
             $serializedData = substr($serializedData, 2);
         }
         $number = (float) $serializedData;
-        $this->minutes = (int) ($number * 60);
+        $minutes = (int) ($number * 60);
         if ($isNegative === true) {
-            $this->minutes *= -1;
+            $minutes *= -1;
         }
+        return $minutes;
     }
 
     protected function _serializeToString(): string
