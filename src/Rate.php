@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use function strlen;
 use Struct\DataType\Enum\RateType;
 use Struct\DataType\Private\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
-use function strlen;
 use function substr;
 
 final readonly class Rate extends AbstractDataType

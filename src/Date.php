@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-use DateMalformedStringException;
+use function count;
 use DateTime;
 use DateTimeZone;
 use Exception\Unexpected\UnexpectedException;
+use function explode;
 use InvalidArgumentException;
+use function strlen;
 use Struct\Contracts\Operator\ComparableInterface;
 use Struct\DataType\Enum\Weekday;
 use Struct\Enum\Operator\Comparison;
 use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\CompareException;
 use Throwable;
-use function count;
-use function explode;
-use function strlen;
 
 final readonly class Date extends AbstractDataTypeInteger
 {
@@ -36,8 +35,6 @@ final readonly class Date extends AbstractDataTypeInteger
         1    => 365,
     ];
 
-
-
     public int $year;
     public int $month;
     public int $day;
@@ -51,21 +48,19 @@ final readonly class Date extends AbstractDataTypeInteger
         $this->_checkDay($this->year, $this->month, $this->day);
     }
 
-
     /**
      * @return array{0:int, 1:int, 2:int}
      */
     protected function _deserialize(string|int|DateTime $serializedData): array
     {
-        if(is_string($serializedData) === true) {
+        if (is_string($serializedData) === true) {
             return $this->_deserializeFromString($serializedData);
         }
-        if(is_int($serializedData) === true) {
+        if (is_int($serializedData) === true) {
             return $this->_deserializeFromInt($serializedData);
         }
         return $this->_deserializeFromDateTime($serializedData);
     }
-
 
     /**
      * @return array{0:int, 1:int, 2:int}
@@ -126,14 +121,11 @@ final readonly class Date extends AbstractDataTypeInteger
         return $this->_deserializeFromString($dateTime->format('Y-m-d'));
     }
 
-
     protected function _serializeToString(): string
     {
         $serializedData = self::_yearMonthDayToString($this->year, $this->month, $this->day);
         return $serializedData;
     }
-
-
 
     public function toDateTime(): DateTime
     {
@@ -144,7 +136,6 @@ final readonly class Date extends AbstractDataTypeInteger
         }
         return $dateTime;
     }
-
 
     protected function _serializeToInt(): int
     {
@@ -163,9 +154,6 @@ final readonly class Date extends AbstractDataTypeInteger
         $days += $day;
         return $days;
     }
-
-
-
 
     public static function calculateDaysByYear(int $year): int
     {
@@ -239,7 +227,7 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function compare(ComparableInterface $compareWith): Comparison
     {
-        if ($compareWith::class !== Date::class) {
+        if ($compareWith::class !== self::class) {
             throw new CompareException('Date can only compare with date', 1700916002);
         }
         if ($this->year < $compareWith->year) {
@@ -262,9 +250,6 @@ final readonly class Date extends AbstractDataTypeInteger
         }
         return Comparison::equal;
     }
-
-
-
 
     public function weekday(): Weekday
     {
@@ -432,5 +417,4 @@ final readonly class Date extends AbstractDataTypeInteger
             throw new InvalidArgumentException('The day must be between 1 and ' . $days, 1737815642);
         }
     }
-
 }

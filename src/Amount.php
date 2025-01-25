@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use function explode;
+use function str_starts_with;
+use function strlen;
 use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\DataType\Enum\Currency;
 use Struct\DataType\Private\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\DataTypeException;
-use function explode;
-use function str_starts_with;
-use function strlen;
 use function substr;
 
 final readonly class Amount extends AbstractDataType implements SumInterface, SignChangeInterface
@@ -28,7 +28,6 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
         $this->decimals = $result[1];
         $this->currency = $result[2];
     }
-
 
     /**
      * @param string $serializedData
@@ -67,7 +66,6 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
 
         return [$value, $decimals, $currency];
     }
-
 
     protected static function createString(int $value, Currency $currency, int $decimals = 2): string
     {
@@ -113,7 +111,7 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
         $decimals = 0;
         $currency = null;
 
-        if(count($summandList) === 0) {
+        if (count($summandList) === 0) {
             throw new DataTypeException('The summand list is empty', 1696314552);
         }
 
@@ -146,7 +144,7 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
     public static function signChange(SignChangeInterface $left): self
     {
         if ($left::class !== self::class) {
-            throw new DataTypeException('Must be of type: <' . self::class .'>', 1737449214);
+            throw new DataTypeException('Must be of type: <' . self::class . '>', 1737449214);
         }
         $amount = self::create($left->value * -1, $left->currency, $left->decimals);
         return $amount;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-
 use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Exception\InvalidFormatException;
 use Struct\Exception\Operator\DataTypeException;
@@ -30,7 +29,6 @@ final readonly class WorkingTime extends AbstractDataTypeSum implements SignChan
         $this->minutes = $minutes;
     }
 
-
     protected function _serializeToInt(): int
     {
         return $this->minutes;
@@ -38,7 +36,7 @@ final readonly class WorkingTime extends AbstractDataTypeSum implements SignChan
 
     protected function _deserialize(int|string $serializedData): int
     {
-        if(is_int($serializedData) === true) {
+        if (is_int($serializedData) === true) {
             return $serializedData;
         }
         if ($serializedData === '') {

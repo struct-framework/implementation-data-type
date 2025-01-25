@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-use InvalidArgumentException;
-use Struct\Exception\DeserializeException;
 use function count;
 use function explode;
+use InvalidArgumentException;
 use function strlen;
+use Struct\Exception\DeserializeException;
 
 final readonly class Month extends AbstractDataTypeInteger
 {
@@ -43,10 +43,10 @@ final readonly class Month extends AbstractDataTypeInteger
     {
         $yearString = (string) $year;
         $monthString = (string) $month;
-        if(strlen($monthString) === 1) {
+        if (strlen($monthString) === 1) {
             $monthString = '0' . $monthString;
         }
-        $date = new self($yearString. '-'. $monthString);
+        $date = new self($yearString . '-' . $monthString);
         return $date;
     }
 
@@ -88,7 +88,7 @@ final readonly class Month extends AbstractDataTypeInteger
      */
     protected function _deserialize(string|int $serializedData): array
     {
-        if(is_int($serializedData) === true) {
+        if (is_int($serializedData) === true) {
             return $this->_deserializeFromInt($serializedData);
         }
         if (strlen($serializedData) !== 7) {
@@ -103,7 +103,6 @@ final readonly class Month extends AbstractDataTypeInteger
 
         return [$year, $month];
     }
-
 
     protected function _serializeToInt(): int
     {

@@ -12,8 +12,7 @@ use Struct\Contracts\Operator\IncrementableInterface;
 use Struct\Enum\Operator\Comparison;
 use Struct\Exception\Operator\CompareException;
 
-
-readonly abstract class AbstractDataTypeInteger extends AbstractDataType implements SerializableToInt, ComparableInterface, SortableInterface, IncrementableInterface
+abstract readonly class AbstractDataTypeInteger extends AbstractDataType implements SerializableToInt, ComparableInterface, SortableInterface, IncrementableInterface
 {
     protected function _serializeToInt(): int
     {
@@ -25,12 +24,11 @@ readonly abstract class AbstractDataTypeInteger extends AbstractDataType impleme
         return $this->_serializeToInt();
     }
 
-
     public function compare(ComparableInterface $compareWith): Comparison
     {
         $selfClassName = get_class($this);
         if ($compareWith instanceof self === false) {
-            throw new CompareException('You can only compare same DataTypes try to compare <' .$selfClassName .'> with <'.$compareWith::class.'>', 1737446643);
+            throw new CompareException('You can only compare same DataTypes try to compare <' . $selfClassName . '> with <' . $compareWith::class . '>', 1737446643);
         }
         $left = $this->serializeToInt();
         $right = $compareWith->serializeToInt();

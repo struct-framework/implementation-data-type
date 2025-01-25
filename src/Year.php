@@ -30,7 +30,6 @@ final readonly class Year extends AbstractDataTypeInteger
         return $this->year;
     }
 
-
     public function firstDayOfTheYear(): Date
     {
         $date = Date::createByYearMonthDay($this->year, 1, 1);

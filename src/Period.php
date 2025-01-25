@@ -7,7 +7,6 @@ namespace Struct\DataType;
 use Struct\Exception\DeserializeException;
 
 final readonly class Period extends AbstractDataType
-
 {
     public Date $startDate;
     public ?Date $endDate;
@@ -48,7 +47,7 @@ final readonly class Period extends AbstractDataType
             $startDate = new Date(substr($serializedData, 0, 10));
             $endDate = new Date(substr($serializedData, -10));
         }
-        if($startDate === null) {
+        if ($startDate === null) {
             throw new DeserializeException('Can not deserialize period: ' . $serializedData, 1724311020);
         }
         return [

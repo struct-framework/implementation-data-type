@@ -7,7 +7,7 @@ namespace Struct\DataType;
 use RuntimeException;
 use Struct\Contracts\DataTypeInterface;
 
-readonly abstract class AbstractDataType implements DataTypeInterface
+abstract readonly class AbstractDataType implements DataTypeInterface
 {
     protected function _serializeToString(): string
     {

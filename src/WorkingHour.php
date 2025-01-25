@@ -24,7 +24,7 @@ final readonly class WorkingHour extends AbstractDataTypeSum implements SignChan
 
     protected function _deserialize(string|int $serializedData): int
     {
-        if(is_int($serializedData) === true) {
+        if (is_int($serializedData) === true) {
             return $serializedData;
         }
         if ($serializedData === '') {
@@ -76,6 +76,4 @@ final readonly class WorkingHour extends AbstractDataTypeSum implements SignChan
         }
         return new static($left->serializeToInt() * -1);
     }
-
-
 }

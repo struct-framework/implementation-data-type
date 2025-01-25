@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
-
 use function bin2hex;
 use function hex2bin;
 
