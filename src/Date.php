@@ -39,13 +39,21 @@ final readonly class Date extends AbstractDataTypeInteger
     public int $month;
     public int $day;
 
-    public function __construct(string|int|DateTime $serializedData)
+    public function __construct(string|int|DateTime $serializedDataOrYear, ?int $month = null, ?int $day = null)
     {
-        $result = $this->_deserialize($serializedData);
-        $this->year = $result[0];
-        $this->month = $result[1];
-        $this->day = $result[2];
-        $this->_checkDay($this->year, $this->month, $this->day);
+        $year = $serializedDataOrYear;
+        if(
+            is_int($year) === false || is_int($month) === false || is_int($day) === false
+        ) {
+            $result = $this->_deserialize($serializedDataOrYear);
+            $year = $result[0];
+            $month = $result[1];
+            $day = $result[2];
+        }
+        $this->_checkDay($year, $month, $day);
+        $this->year = $year;
+        $this->month = $month;
+        $this->day = $day;
     }
 
     /**
@@ -123,7 +131,16 @@ final readonly class Date extends AbstractDataTypeInteger
 
     protected function _serializeToString(): string
     {
-        $serializedData = self::_yearMonthDayToString($this->year, $this->month, $this->day);
+        $yearString = (string) $this->year;
+        $monthString = (string) $this->month;
+        $dayString = (string) $this->day;
+        if (strlen($monthString) === 1) {
+            $monthString = '0' . $monthString;
+        }
+        if (strlen($dayString) === 1) {
+            $dayString = '0' . $dayString;
+        }
+        $serializedData = $yearString . '-' . $monthString . '-' . $dayString;
         return $serializedData;
     }
 
@@ -291,7 +308,7 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function firstDayOfTheYear(): self
     {
-        $date = self::createByYearMonthDay($this->year, 1, 1);
+        $date = new self($this->year, 1, 1);
         return $date;
     }
 
@@ -305,7 +322,7 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function lastDayOfTheYear(): self
     {
-        $date = self::createByYearMonthDay($this->year, 12, 31);
+        $date = new self($this->year, 12, 31);
         return $date;
     }
 
@@ -319,13 +336,13 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function lastDayInPreviousYear(): self
     {
-        $date = self::createByYearMonthDay($this->year - 1, 12, 31);
+        $date = new self($this->year - 1, 12, 31);
         return $date;
     }
 
     public function firstDayOfMonth(): self
     {
-        $date = self::createByYearMonthDay($this->year, $this->month, 1);
+        $date = new self($this->year, $this->month, 1);
         return $date;
     }
 
@@ -340,7 +357,7 @@ final readonly class Date extends AbstractDataTypeInteger
     public function lastDayOfMonth(): self
     {
         $day = self::daysInMonth($this->year, $this->month);
-        $date = self::createByYearMonthDay($this->year, $this->month, $day);
+        $date = new Date($this->year, $this->month, $day);
         return $date;
     }
 
@@ -354,7 +371,7 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function toMonth(): Month
     {
-        $month = new Month($this->year . '-' . $this->month);
+        $month = new Month($this->year,  $this->month);
         return $month;
     }
 
@@ -366,43 +383,22 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function withYear(int $year): self
     {
-        $date =self::createByYearMonthDay($year, $this->month, $this->day);
+        $date = new self($year, $this->month, $this->day);
         return $date;
     }
 
     public function withMonth(int $month): self
     {
-        $date = self::createByYearMonthDay($this->year, $month, $this->day);
+        $date = new self($this->year, $month, $this->day);
         return $date;
     }
 
     public function withDay(int $day): self
     {
-        $date = self::createByYearMonthDay($this->year, $this->month, $day);
+        $date = new self($this->year, $this->month, $day);
         return $date;
     }
 
-    public static function createByYearMonthDay(int $year, int $month, int $day): self
-    {
-        $serializedData = self::_yearMonthDayToString($year, $month, $day);
-        $date = new self($serializedData);
-        return $date;
-    }
-
-    protected static function _yearMonthDayToString(int $year, int $month, int $day): string
-    {
-        $yearString = (string) $year;
-        $monthString = (string) $month;
-        $dayString = (string) $day;
-        if (strlen($monthString) === 1) {
-            $monthString = '0' . $monthString;
-        }
-        if (strlen($dayString) === 1) {
-            $dayString = '0' . $dayString;
-        }
-        $serializedData = $yearString . '-' . $monthString . '-' . $dayString;
-        return $serializedData;
-    }
 
     protected function _checkDay(int $year, int $month, int $day): void
     {
