@@ -42,7 +42,7 @@ final readonly class Date extends AbstractDataTypeInteger
     public function __construct(string|int|DateTime $serializedDataOrYear, ?int $month = null, ?int $day = null)
     {
         $year = $serializedDataOrYear;
-        if(
+        if (
             is_int($year) === false || is_int($month) === false || is_int($day) === false
         ) {
             $result = $this->_deserialize($serializedDataOrYear);
@@ -357,7 +357,7 @@ final readonly class Date extends AbstractDataTypeInteger
     public function lastDayOfMonth(): self
     {
         $day = self::daysInMonth($this->year, $this->month);
-        $date = new Date($this->year, $this->month, $day);
+        $date = new self($this->year, $this->month, $day);
         return $date;
     }
 
@@ -371,7 +371,7 @@ final readonly class Date extends AbstractDataTypeInteger
 
     public function toMonth(): Month
     {
-        $month = new Month($this->year,  $this->month);
+        $month = new Month($this->year, $this->month);
         return $month;
     }
 
@@ -398,7 +398,6 @@ final readonly class Date extends AbstractDataTypeInteger
         $date = new self($this->year, $this->month, $day);
         return $date;
     }
-
 
     protected function _checkDay(int $year, int $month, int $day): void
     {

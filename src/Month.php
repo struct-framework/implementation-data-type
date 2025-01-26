@@ -19,7 +19,7 @@ final readonly class Month extends AbstractDataTypeInteger
     public function __construct(string|int $serializedDataOrYear, ?int $month = null)
     {
         $year = $serializedDataOrYear;
-        if(
+        if (
             is_int($year) === false || is_int($month) === false
         ) {
             $result = $this->_deserialize($serializedDataOrYear);
