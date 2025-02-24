@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Struct\DataType;
 
+use Struct\DataType\Internal\Helper\NumberStringToNumberInt;
 use function explode;
 use function str_starts_with;
 use function strlen;
 use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\DataType\Enum\Currency;
-use Struct\DataType\Internal\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\DataTypeException;
 use function substr;

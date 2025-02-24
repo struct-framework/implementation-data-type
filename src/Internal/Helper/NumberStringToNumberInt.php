@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Struct\DataType\Private\Helper;
+namespace Struct\DataType\Internal\Helper;
 
 use function count;
 use function explode;
