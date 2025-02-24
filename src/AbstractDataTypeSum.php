@@ -14,7 +14,7 @@ abstract readonly class AbstractDataTypeSum extends AbstractDataTypeInteger impl
         $sum = 0;
         foreach ($summandList as $summand) {
             if ($summand instanceof static === false) {
-                throw new DataTypeException('All summand must be of type: ' . static::class, 1737810893);
+                throw new DataTypeException(1737810893, 'All summand must be of type: ' . static::class);
             }
             $sum += $summand->serializeToInt();
         }

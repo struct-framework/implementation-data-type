@@ -28,7 +28,7 @@ abstract readonly class AbstractDataTypeInteger extends AbstractDataType impleme
     {
         $selfClassName = get_class($this);
         if ($compareWith instanceof self === false) {
-            throw new CompareException('You can only compare same DataTypes try to compare <' . $selfClassName . '> with <' . $compareWith::class . '>', 1737446643);
+            throw new CompareException(1737446643, 'You can only compare same DataTypes try to compare <' . $selfClassName . '> with <' . $compareWith::class . '>');
         }
         $left = $this->serializeToInt();
         $right = $compareWith->serializeToInt();

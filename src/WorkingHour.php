@@ -72,7 +72,7 @@ final readonly class WorkingHour extends AbstractDataTypeSum implements SignChan
     public static function signChange(SignChangeInterface $left): self
     {
         if ($left instanceof static === false) {
-            throw new DataTypeException('The value must be of DataType: ' . static::class, 1737818254);
+            throw new DataTypeException(1737818254, 'The value must be of DataType: ' . static::class);
         }
         return new static($left->serializeToInt() * -1);
     }

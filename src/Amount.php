@@ -112,26 +112,26 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
         $currency = null;
 
         if (count($summandList) === 0) {
-            throw new DataTypeException('The summand list is empty', 1696314552);
+            throw new DataTypeException(1696314552, 'The summand list is empty');
         }
 
         foreach ($summandList as $summand) {
-            if ($summand instanceof self === false) {
-                throw new DataTypeException('All summand must be of type: ' . self::class, 1696344427);
+            if ($summand instanceof Amount === false) {
+                throw new DataTypeException(1696344427, 'All summand must be of type: ' . self::class);
             }
             if ($currency === null) {
                 $currency = $summand->currency;
             }
             if ($summand->currency !== $currency) {
-                throw new DataTypeException('All summand must have the same currency', 1696344461);
+                throw new DataTypeException(1696344461, 'All summand must have the same currency');
             }
             if ($summand->decimals > $decimals) {
                 $decimals = $summand->decimals;
             }
         }
         $sum = 0;
-        /** @var self $summand */
-        foreach ($summandList as $summand) {
+        /** @var Amount $summand */
+        foreach ($summandList as $summand) { //@phpstan-ignore varTag.type
             $tensShift = 10 ** ($decimals - $summand->decimals);
             $value = $summand->value * $tensShift;
             $sum += $value;
@@ -144,7 +144,7 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
     public static function signChange(SignChangeInterface $left): self
     {
         if ($left::class !== self::class) {
-            throw new DataTypeException('Must be of type: <' . self::class . '>', 1737449214);
+            throw new DataTypeException(1737449214, 'Must be of type: <' . self::class . '>');
         }
         $amount = self::create($left->value * -1, $left->currency, $left->decimals);
         return $amount;

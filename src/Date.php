@@ -245,7 +245,7 @@ final readonly class Date extends AbstractDataTypeInteger
     public function compare(ComparableInterface $compareWith): Comparison
     {
         if ($compareWith::class !== self::class) {
-            throw new CompareException('Date can only compare with date', 1700916002);
+            throw new CompareException(1700916002, 'Date can only compare with date');
         }
         if ($this->year < $compareWith->year) {
             return Comparison::lessThan;
