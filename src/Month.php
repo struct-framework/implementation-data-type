@@ -33,7 +33,7 @@ final readonly class Month extends AbstractDataTypeInteger
     public function withMonth(int $month): self
     {
         if ($month < 1 || $month > 12) {
-            throw new InvalidArgumentException('The month must be between 1 and 12', 1696052867);
+            throw new DeserializeException(1740344686, 'The month must be between 1 and 12');
         }
         return self::createByYearMonth($this->year, $month);
     }
@@ -41,7 +41,7 @@ final readonly class Month extends AbstractDataTypeInteger
     public function withYear(int $year): self
     {
         if ($year < 1000 || $year > 9999) {
-            throw new InvalidArgumentException('The year must be between 1000 and 9999', 1696052931);
+            throw new DeserializeException(1740344693, 'The year must be between 1000 and 9999');
         }
         return self::createByYearMonth($year, $this->month);
     }
@@ -69,7 +69,7 @@ final readonly class Month extends AbstractDataTypeInteger
 
     public function firstDayOfMonth(): Date
     {
-        $date = Date::createByYearMonthDay($this->year, $this->month, 1);
+        $date = new Date($this->year, $this->month, 1);
         return $date;
     }
 
@@ -99,11 +99,11 @@ final readonly class Month extends AbstractDataTypeInteger
             return $this->_deserializeFromInt($serializedData);
         }
         if (strlen($serializedData) !== 7) {
-            throw new DeserializeException('The value serialized data string must have 7 characters', 1696227826);
+            throw new DeserializeException(1696227826, 'The value serialized data string must have 7 characters');
         }
         $parts = explode('-', $serializedData);
         if (count($parts) !== 2) {
-            throw new DeserializeException('The value serialized data must year und month to parts separate by -', 1696227896);
+            throw new DeserializeException(1696227896, 'The value serialized data must year und month to parts separate by -');
         }
         $year = (int) $parts[0];
         $month = (int) $parts[1];

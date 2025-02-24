@@ -14,7 +14,7 @@ final readonly class Year extends AbstractDataTypeInteger
     {
         $year = (int) $serializedData;
         if ($year < 1000 || $year > 9999) {
-            throw new DeserializeException('The value serialized data $year string must be between 1000 and 9999', 1737809871);
+            throw new DeserializeException(1737809871, 'The value serialized data $year string must be between 1000 and 9999');
         }
         $this->year = $year;
     }
@@ -32,13 +32,13 @@ final readonly class Year extends AbstractDataTypeInteger
 
     public function firstDayOfTheYear(): Date
     {
-        $date = Date::createByYearMonthDay($this->year, 1, 1);
+        $date = new Date($this->year, 1, 1);
         return $date;
     }
 
     public function lastDayOfYear(): Date
     {
-        $data = Date::createByYearMonthDay($this->year, 12, 31);
+        $data = new Date($this->year, 12, 31);
         return $data;
     }
 

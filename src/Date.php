@@ -76,11 +76,11 @@ final readonly class Date extends AbstractDataTypeInteger
     protected function _deserializeFromString(string $serializedData): array
     {
         if (strlen($serializedData) !== 10) {
-            throw new DeserializeException('The value serialized data string must have 10 characters', 1696334669);
+            throw new DeserializeException(1696334669, 'The value serialized data string must have 10 characters');
         }
         $parts = explode('-', $serializedData);
         if (count($parts) !== 3) {
-            throw new DeserializeException('The value serialized data must have year, month and day separate by -', 1696334753);
+            throw new DeserializeException(1696334753, 'The value serialized data must have year, month and day separate by -');
         }
         $year = (int) $parts[0];
         $month = (int) $parts[1];
@@ -94,7 +94,7 @@ final readonly class Date extends AbstractDataTypeInteger
     protected function _deserializeFromInt(int $serializedData): array
     {
         if ($serializedData < 0 || $serializedData > 3287181) {
-            throw new DeserializeException('The value of serialized data string must be between 0 and 3287181', 1700914014);
+            throw new DeserializeException(1700914014,'The value of serialized data string must be between 0 and 3287181');
         }
         $days = $serializedData;
         $remainingDays = 0;

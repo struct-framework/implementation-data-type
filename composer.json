@@ -9,8 +9,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Struct\\DataType\\": "src",
-      "Struct\\DataType\\Private\\": "src-private"
+      "Struct\\DataType\\": "src"
     }
   }
 }

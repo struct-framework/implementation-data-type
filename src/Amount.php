@@ -10,7 +10,7 @@ use function strlen;
 use Struct\Contracts\Operator\SignChangeInterface;
 use Struct\Contracts\Operator\SumInterface;
 use Struct\DataType\Enum\Currency;
-use Struct\DataType\Private\Helper\NumberStringToNumberInt;
+use Struct\DataType\Internal\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
 use Struct\Exception\Operator\DataTypeException;
 use function substr;
@@ -42,7 +42,7 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
         }
         $parts = explode(' ', $serializedData);
         if (count($parts) !== 2) {
-            throw new DeserializeException('The amount and currency must be separated by a space', 1696314552);
+            throw new DeserializeException(1696314552, 'The amount and currency must be separated by a space');
         }
         $amountString = $parts[0];
         $currencyCode = $parts[1];
@@ -54,7 +54,7 @@ final readonly class Amount extends AbstractDataType implements SumInterface, Si
             }
         }
         if ($currency === null) {
-            throw new DeserializeException('The currency code is invalid: ' . $currencyCode, 1696315127);
+            throw new DeserializeException(1696315127, 'The currency code is invalid: ' . $currencyCode);
         }
 
         $numberArray = NumberStringToNumberInt::numberStringToNumberInt($amountString);

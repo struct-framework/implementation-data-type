@@ -20,7 +20,7 @@ final class NumberStringToNumberInt
     {
         $numberParts = explode('.', $number);
         if (count($numberParts) > 2) {
-            throw new DeserializeException('The amount must not have more than one decimal: ' . $number, 1696315411);
+            throw new DeserializeException(1696315411, 'The amount must not have more than one decimal: ' . $number);
         }
         $numberFull = $numberParts[0];
         $numberFraction = '';
@@ -41,7 +41,7 @@ final class NumberStringToNumberInt
         }
 
         if ((string) $numberInt !== $numberString) {
-            throw new DeserializeException('Invalid character in amount: ' . $numberString, 1696315612);
+            throw new DeserializeException(1696315612, 'Invalid character in amount: ' . $numberString);
         }
 
         return [

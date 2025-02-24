@@ -34,21 +34,21 @@ final readonly class Period extends AbstractDataType
         }
         if ($length === 4) {
             $year = (int) $serializedData;
-            $startDate = Date::createByYearMonthDay($year, 1, 1);
-            $endDate = Date::createByYearMonthDay($year, 12, 31);
+            $startDate = new Date($year, 1, 1);
+            $endDate = new Date($year, 12, 31);
         }
         if ($length === 7) {
             $year = (int) substr($serializedData, 0, 4);
             $month = (int) substr($serializedData, 5, 2);
-            $startDate = Date::createByYearMonthDay($year, $month, 1);
-            $endDate = Date::createByYearMonthDay($year, 12, 31);
+            $startDate =  new Date($year, $month, 1);
+            $endDate =  new Date($year, 12, 31);
         }
         if ($length === 23) {
             $startDate = new Date(substr($serializedData, 0, 10));
             $endDate = new Date(substr($serializedData, -10));
         }
         if ($startDate === null) {
-            throw new DeserializeException('Can not deserialize period: ' . $serializedData, 1724311020);
+            throw new DeserializeException(1740344626, 'Can not deserialize period: ' . $serializedData);
         }
         return [
             $startDate,

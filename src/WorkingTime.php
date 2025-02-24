@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Struct\DataType;
 
 use Struct\Contracts\Operator\SignChangeInterface;
-use Struct\Exception\InvalidFormatException;
+use Struct\Exception\DeserializeException;
+use Struct\Exception\InvalidStructException;
+use Struct\Exception\InvalidValueException;
 use Struct\Exception\Operator\DataTypeException;
 
 final readonly class WorkingTime extends AbstractDataTypeSum implements SignChangeInterface
@@ -61,15 +63,15 @@ final readonly class WorkingTime extends AbstractDataTypeSum implements SignChan
                 $numberInt = (int) $numberString;
 
                 if ($numberInt < 0) {
-                    throw new InvalidFormatException($serializedData, '1mo 1w 2d 5h 9m', 1707057960);
+                    throw new InvalidValueException(1707057960, $serializedData, '1mo 1w 2d 5h 9m');
                 }
                 if ($numberString !== (string) $numberInt) {
-                    throw new InvalidFormatException($serializedData, '1mo 1w 2d 5h 9m', 1707057655);
+                    throw new InvalidValueException(1707057655, $serializedData, '1mo 1w 2d 5h 9m');
                 }
                 $minutes += $numberInt * $value;
                 continue 2;
             }
-            throw new InvalidFormatException($serializedData, '1mo 1w 2d 5h 9m', 1707057655);
+            throw new InvalidValueException(1707057655, $serializedData, '1mo 1w 2d 5h 9m');
         }
 
         if ($isNegative === true) {
@@ -105,7 +107,7 @@ final readonly class WorkingTime extends AbstractDataTypeSum implements SignChan
     public static function signChange(SignChangeInterface $left): self
     {
         if ($left instanceof static === false) {
-            throw new DataTypeException('The value must be of DataType: ' . static::class, 1737818254);
+            throw new InvalidStructException(1740337710, 'The value must be of DataType: ' . static::class);
         }
         return new static($left->serializeToInt() * -1);
     }

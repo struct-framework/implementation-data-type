@@ -6,7 +6,7 @@ namespace Struct\DataType;
 
 use function strlen;
 use Struct\DataType\Enum\RateType;
-use Struct\DataType\Private\Helper\NumberStringToNumberInt;
+use Struct\DataType\Internal\Helper\NumberStringToNumberInt;
 use Struct\Exception\DeserializeException;
 use function substr;
 
@@ -31,13 +31,13 @@ final readonly class Rate extends AbstractDataType
     {
         $parts = explode(' ', $serializedData);
         if (count($parts) !== 2) {
-            throw new DeserializeException('The value must have an rate type % or ‰ seperated by an space', 1696348899);
+            throw new DeserializeException(1740335374, 'The value must have an rate type % or ‰ seperated by an space');
         }
         $valueString = $parts[0];
         $rateTypeString = $parts[1];
         $rateType = RateType::tryFrom($rateTypeString);
         if ($rateType === null) {
-            throw new DeserializeException('The rate type must be % or ‰', 1696348977);
+            throw new DeserializeException(1740335384, 'The rate type must be % or ‰');
         }
         $numberArray = NumberStringToNumberInt::numberStringToNumberInt($valueString);
         list($value, $decimals) = $numberArray;
