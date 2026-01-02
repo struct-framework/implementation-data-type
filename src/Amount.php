@@ -55,7 +55,7 @@ final class Amount extends AbstractDataType implements SumInterface, SignChangeI
         return $value;
     }
 
-    protected function format2Decimals(string $decimalSeparator = '.', string $thousandsSeparator = ','): string
+    public function format2Decimals(string $decimalSeparator = '.', string $thousandsSeparator = ','): string
     {
         $value = $this->getValue2DecimalsAsInt();
         $sign = '';
