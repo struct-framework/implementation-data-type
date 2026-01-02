@@ -37,6 +37,39 @@ final class Amount extends AbstractDataType implements SumInterface, SignChangeI
         return $this->value;
     }
 
+    public function getValue2DecimalsAsInt(): int
+    {
+        $value = $this->value;
+        if($this->amountVolume !== AmountVolume::Base) {
+            throw new \RuntimeException('Only base amount volumes are supported');
+        }
+        $decimals = $this->decimals;
+        while ($decimals < 2) {
+            $decimals++;
+            $value *= 10;
+        }
+        while ($decimals > 2) {
+            $decimals--;
+            $value = (int) ($value / 10);
+        }
+        return $value;
+    }
+
+    protected function format2Decimals(string $decimalSeparator = '.', string $thousandsSeparator = ','): string
+    {
+        $value = $this->getValue2DecimalsAsInt();
+        $sign = '';
+        if ($value < 0) {
+            $sign = '- ';
+            $value *= -1;
+        }
+        $formatAmount  = $sign;
+        $formatAmount .= \number_format($value / 100, 2, ',', '.');
+        $formatAmount .= ' ';
+        $formatAmount .= $this->getCurrency()->name;
+        return $formatAmount;
+    }
+
     public function setValue(int $value): void
     {
         $this->value = $value;
