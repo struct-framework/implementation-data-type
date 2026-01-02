@@ -23,6 +23,15 @@ final class Amount extends AbstractDataType implements SumInterface, SignChangeI
     protected AmountVolume $amountVolume = AmountVolume::Base;
     protected int $decimals = 2;
 
+    public function __construct(null|int|string $serializedData = null)
+    {
+        if(is_int($serializedData)) {
+            $this->value = $serializedData;
+            return;
+        }
+        parent::__construct($serializedData);
+    }
+
     public function getValue(): int
     {
         return $this->value;
